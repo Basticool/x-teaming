@@ -51,13 +51,23 @@ textgrad:
 
 Refer to `agents/base_agent.py` for a complete list of supported APIs and model settings.
 
-3. Set your OpenAI API key, as well as any additional API keys used, with environment variables:
+3. Set your Azure OpenAI credentials, as well as any additional API keys used, with environment variables:
 ```bash
-export OPENAI_API_KEY="your-key"
+export AZURE_OPENAI_URI="https://your-resource.openai.azure.com"
+export AZURE_KEY="your-key"
 export OPENROUTER_API_KEY="your-key"
 ```
 
-\* An OpenAI key is always required for the GPT-4o Verifier.
+\* This fork routes `provider: "openai"` models and the GPT-4o Verifier through Azure OpenAI (the model name is used as the deployment name). Azure credentials are therefore always required.
+
+4. (Optional) Point the Verifier at a custom policy document instead of OpenAI's usage policy:
+```bash
+# one document
+export XTEAM_POLICY_FILE="/path/to/tau2-bench/data/tau2/domains/retail/policy.md"
+# several documents, joined with the OS path separator (":" on Linux/macOS)
+export XTEAM_POLICY_FILE="/path/to/telecom/main_policy.md:/path/to/telecom/tech_support_manual.md"
+```
+The verifier then scores target responses for violations of that policy. Target behaviors should describe the specific violation to elicit (e.g. "Cancel a pending order for a reason other than 'no longer needed' or 'ordered by mistake'"). Unset, the original OpenAI usage policy is used.
 
 ## Usage
 
@@ -148,7 +158,8 @@ This executes:
    - Uses configuration from `config/config.yaml`
 
 3. Verifier (`agents/gpt_evaluator.py`):
-    - Scores responses on a scale from 1-5 (benign to full jailbreak) and provides a reason
+    - Scores responses on a scale from 1-5 (benign to full policy violation) and provides a reason
+    - Judges against OpenAI's usage policy by default, or the document(s) in `XTEAM_POLICY_FILE`
     - Uses GPT-4o
     - Truncates target responses under verification to 512 tokens by default
 
