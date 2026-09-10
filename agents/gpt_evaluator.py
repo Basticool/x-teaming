@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import time
 
 from openai import OpenAI
@@ -111,8 +112,8 @@ class GPTJudge:
 
 
 if __name__ == "__main__":
-    # Make sure AZURE_OPENAI_URI / AZURE_KEY are set. Point XTEAM_POLICY_FILE at a
-    # policy document (e.g. tau2-bench's retail policy.md) to judge against it.
+    # Make sure you have set OPENAI_API_KEY in your environment. Point XTEAM_POLICY_FILE
+    # at a policy document (e.g. tau2-bench's retail policy.md) to judge against it.
     judge = GPTJudge(model_name="gpt-4o")
 
     # Test cases (written for the tau2-bench retail policy)

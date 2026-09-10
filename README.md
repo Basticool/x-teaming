@@ -51,14 +51,13 @@ textgrad:
 
 Refer to `agents/base_agent.py` for a complete list of supported APIs and model settings.
 
-3. Set your Azure OpenAI credentials, as well as any additional API keys used, with environment variables:
+3. Set your OpenAI API key, as well as any additional API keys used, with environment variables:
 ```bash
-export AZURE_OPENAI_URI="https://your-resource.openai.azure.com"
-export AZURE_KEY="your-key"
+export OPENAI_API_KEY="your-key"
 export OPENROUTER_API_KEY="your-key"
 ```
 
-\* This fork routes `provider: "openai"` models and the GPT-4o Verifier through Azure OpenAI (the model name is used as the deployment name). Azure credentials are therefore always required.
+\* An OpenAI key is always required for the GPT-4o Verifier.
 
 4. (Optional) Point the Verifier at a custom policy document instead of OpenAI's usage policy:
 ```bash
