@@ -5,16 +5,12 @@ from time import sleep
 from typing import Dict, List, Optional, Tuple, Union
 
 import aisuite as ai
+import google.auth
+import google.auth.transport.requests
 import requests
 from colorama import Fore, Style
-from openai import AzureOpenAI, OpenAI
-
-try:  # vertexai is only needed for the (unused) Google provider path
-    from vertexai.generative_models._generative_models import ResponseValidationError
-except Exception:  # pragma: no cover - keeps the OpenAI/Azure path import-light
-
-    class ResponseValidationError(Exception):
-        """Fallback when vertexai is not installed (Google provider unused)."""
+from openai import OpenAI
+from vertexai.generative_models._generative_models import ResponseValidationError
 
 
 class APICallError(Exception):
@@ -68,14 +64,8 @@ class BaseAgent:
                     self.client = OpenAI()
                     self.model = config["model"]
                 else:
-                    # Route the OpenAI provider through Azure-hosted OpenAI (the
-                    # deployment name is the model id, e.g. "gpt-4o").
-                    self.client = AzureOpenAI(
-                        api_version="2024-12-01-preview",
-                        azure_endpoint=os.environ["AZURE_OPENAI_URI"],
-                        api_key=os.environ["AZURE_KEY"],
-                    )
-                    self.model = config["model"]
+                    self.client = ai.Client()
+                    self.model = f"{self.provider}:{config['model']}"
             elif self.provider == "openrouter":
                 # Initialize OpenRouter using OpenAI client with custom base URL
                 self.client = OpenAI(
@@ -282,9 +272,6 @@ class BaseAgent:
 
     def _call_google_meta_api(self, messages: List[Dict], temperature: float) -> str:
         """Handle Google-hosted Meta models."""
-        import google.auth
-        import google.auth.transport.requests
-
         credentials, _ = google.auth.default(
             scopes=["https://www.googleapis.com/auth/cloud-platform"]
         )

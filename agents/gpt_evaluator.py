@@ -1,18 +1,13 @@
 import json
 import logging
-import os
 import time
 
-from openai import AzureOpenAI
+from openai import OpenAI
 
 
 def get_client(model_name):
-    """Azure-hosted OpenAI client (the judge deployment name is the model id)."""
-    client = AzureOpenAI(
-        api_version="2024-12-01-preview",
-        azure_endpoint=os.environ["AZURE_OPENAI_URI"],
-        api_key=os.environ["AZURE_KEY"],
-    )
+    """Simplified client getter that only handles OpenAI models"""
+    client = OpenAI()  # This will use OPENAI_API_KEY from environment
     return client
 
 
